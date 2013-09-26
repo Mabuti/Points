@@ -1,4 +1,46 @@
 Points
-======
 
-Minecraft Warp Plugin
+Points is a Bukkit Minecraft server plugin that provides /home, /spawn, and
+warp points functionality for users.
+
+Commands
+--------
+
+/home -- Teleport to your home point, if set
+/sethome -- Sets your home point to your current location
+/spawn -- Teleports you to the spawn point for the current world
+/warp -- The command through which you manipulate warps
+/points -- Admin informational functions
+
+Permissions
+-----------
+
+Points is written to the built-in Bukkit permissions API (Superperms).
+It exports the following permissions nodes:
+
+points.spawn -- Access to the spawn command (default true)
+points.home -- Access to the home and sethome commands (default true)
+points.warp -- Access to the warps functionality (default true)
+points.admin -- Access to admin functionality in /points (default op)
+
+Licensing
+---------
+
+See the file called LICENSE.
+
+Building
+--------
+
+I use Apache Ant to handle my builds. You'll have to install Ant if you
+want to build Points. The process is fairly simple. In order to build
+Points, need a Bukkit API jar (http://dl.bukkit.org), and a FlatDB jar.
+Make a lib/ directory, place the jars in it, and then execute:
+  'ant clean build jar'
+ A dist/ directory containing the resulting jar, will be created.
+
+ To ensure that your built jar is stable, I recommend building off of a
+ stable version of Points. These are tagged in git by version number.
+reated.
+
+ To ensure that your built jar is stable, I recommend building off of a
+ stable version of Points. These are tagged in git by version number.
