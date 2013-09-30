@@ -1,5 +1,6 @@
 package com.pvminecraft.points.warps;
 
+import static com.pvminecraft.points.Messages._;
 import com.pvminecraft.FlatDB.FlatDB;
 import com.pvminecraft.FlatDB.Row;
 import com.pvminecraft.points.Points;
@@ -109,7 +110,11 @@ public class PlayerWarpManager {
     public static void sendTo(Player player, OwnedWarp warp) {
         if(warp == null)
             return;
+        try {
         Points.teleportTo(player, warp.getTarget());
+        } catch (Exception ex) {
+            player.sendMessage(_("invalidDestination", warp.getName()));
+        }
     }
 
     public void load() {
