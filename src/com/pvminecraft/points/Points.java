@@ -34,6 +34,8 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import static com.pvminecraft.points.Messages._;
+
 public class Points extends JavaPlugin implements PointsService {
     private CommandHandler commands;
     private HomeManager homeManager;
@@ -214,15 +216,23 @@ public class Points extends JavaPlugin implements PointsService {
         getCommand("points").setExecutor(commands);
     }
     
-    public static void teleportTo(Entity entity, Location loc) {
-        Chunk chunk = loc.getChunk();
+    public static void teleportTo(Entity entity, Location loc, String warpName) throws InvalidDestinationException{
+        Chunk chunk = null;
+
+        try {
+            chunk = loc.getChunk();
+        } catch (NullPointerException ex) {
+            throw new InvalidDestinationException(_("invalidDestination", warpName), ex.getCause());
+        }
+
         if(!chunk.isLoaded())
             chunk.load();
+
         if(loc.getBlock().getType() != Material.AIR) {
             Location locN = new Location(loc.getWorld(), loc.getX(), loc.getY() + 1, loc.getZ());
             if(locN.getY() > locN.getWorld().getMaxHeight())
                 return;
-            teleportTo(entity, locN);
+            teleportTo(entity, locN, warpName);
         } else {
             entity.teleport(loc);
         }

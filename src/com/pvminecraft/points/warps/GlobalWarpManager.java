@@ -2,6 +2,7 @@ package com.pvminecraft.points.warps;
 
 import com.pvminecraft.FlatDB.FlatDB;
 import com.pvminecraft.FlatDB.Row;
+import com.pvminecraft.points.InvalidDestinationException;
 import com.pvminecraft.points.Points;
 import com.pvminecraft.points.log.Level;
 import com.pvminecraft.points.log.Stdout;
@@ -78,7 +79,12 @@ public class GlobalWarpManager {
     public static void sendTo(Player player, Warp warp) {
         if(warp == null)
             return;
-        Points.teleportTo(player, warp.getTarget());
+        try {
+            Points.teleportTo(player, warp.getTarget(), warp.getName());
+        } catch (InvalidDestinationException ex) {
+            player.sendMessage(ex.getMessage());
+            Stdout.println(ex.getMessage(), Level.ERROR);
+        }
     }
 
     public void load() {

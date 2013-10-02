@@ -1,9 +1,13 @@
 package com.pvminecraft.points.commands.spawn;
 
 import static com.pvminecraft.points.Messages._;
+
+import com.pvminecraft.points.InvalidDestinationException;
 import com.pvminecraft.points.Points;
 import com.pvminecraft.points.commands.ArgumentSet;
 import com.pvminecraft.points.commands.Command;
+import com.pvminecraft.points.log.Level;
+import com.pvminecraft.points.log.Stdout;
 import com.pvminecraft.points.utils.Pair;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -25,10 +29,17 @@ public class SpawnBed extends ArgumentSet {
         }
         Player player = (Player) sender;
         Location bed = player.getBedSpawnLocation();
-        if(bed != null)
-            Points.teleportTo(player, bed);
-        else
-            Points.teleportTo(player, player.getLocation().getWorld().getSpawnLocation());
+        try {
+            if(bed != null)
+                Points.teleportTo(player, bed, "Player Bed");
+            else
+                Points.teleportTo(player, player.getLocation().getWorld().getSpawnLocation(), "**Spawn**");
+
+        } catch (InvalidDestinationException ex) {
+            player.sendMessage(ex.getMessage());
+            Stdout.println(ex.getMessage(), Level.ERROR);
+        }
+
         return true;
     }
 

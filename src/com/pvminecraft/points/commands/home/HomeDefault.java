@@ -1,9 +1,13 @@
 package com.pvminecraft.points.commands.home;
 
 import static com.pvminecraft.points.Messages._;
+
+import com.pvminecraft.points.InvalidDestinationException;
 import com.pvminecraft.points.Points;
 import com.pvminecraft.points.commands.ArgumentSet;
 import com.pvminecraft.points.commands.Command;
+import com.pvminecraft.points.log.Level;
+import com.pvminecraft.points.log.Stdout;
 import com.pvminecraft.points.utils.Pair;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -26,12 +30,19 @@ public class HomeDefault extends ArgumentSet {
         Player player = (Player) sender;
         Points points = (Points) plugin;
         Location home = points.getHomeManager().getHome(player.getName());
-        if(home == null)
-            player.sendMessage(_("noHome"));
-        else {
-            Points.teleportTo(player, home);
-            player.sendMessage(_("welcome"));
+
+        try {
+            if(home == null)
+                player.sendMessage(_("noHome"));
+            else {
+                Points.teleportTo(player, home, "Player Home");
+                player.sendMessage(_("welcome"));
+            }
+        } catch (InvalidDestinationException ex) {
+            player.sendMessage(ex.getMessage());
+            Stdout.println(ex.getMessage(), Level.ERROR);
         }
+
         return true;
     }
 
