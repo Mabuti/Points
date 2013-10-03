@@ -15,7 +15,6 @@ import com.pvminecraft.points.commands.warp.*;
 import com.pvminecraft.points.homes.HomeManager;
 import com.pvminecraft.points.log.Level;
 import com.pvminecraft.points.log.Stdout;
-import com.pvminecraft.points.utils.ClassPathAdder;
 import com.pvminecraft.points.utils.Downloader;
 import com.pvminecraft.points.warps.GlobalWarpManager;
 import com.pvminecraft.points.warps.PlayerWarpManager;
@@ -41,7 +40,6 @@ public class Points extends JavaPlugin implements PointsService {
     private HomeManager homeManager;
     private PlayerWarpManager playerManager;
     private GlobalWarpManager globalManager;
-    public static final String dbURL = "http://cloud.github.com/downloads/s0lder/FlatDB/FlatDB.jar";
     public static final String vrsnURL = "http://bukget.org/api/plugin/points/latest";
     private YamlConfiguration config;
     private File confFile;
@@ -55,11 +53,6 @@ public class Points extends JavaPlugin implements PointsService {
 
     @Override
     public void onEnable() {
-        if(!checkLibs("lib/")) {
-            Stdout.println("Could not download required libraries!", Level.ERROR);
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
         if(!getDataFolder().exists())
             getDataFolder().mkdirs();
         
@@ -250,21 +243,5 @@ public class Points extends JavaPlugin implements PointsService {
     
     public HomeManager getHomeManager() {
         return homeManager;
-    }
-
-    private boolean checkLibs(String dir) {
-        //Check for lib/
-        File lib = new File(dir);
-        if(!lib.exists())
-            lib.mkdirs();
-        //Check for FlatDB.jar
-        File jar = new File(dir, "FlatDB.jar");
-        if(!jar.exists()){
-            Stdout.println("Downloading FlatDB.jar", Level.MESSAGE);
-            boolean down = Downloader.getFile(dbURL, jar.getPath());
-            boolean load = ClassPathAdder.addFile(jar);
-            return down && load;
-        }
-        return true;
     }
 }
