@@ -15,19 +15,18 @@ import com.pvminecraft.points.commands.warp.*;
 import com.pvminecraft.points.homes.HomeManager;
 import com.pvminecraft.points.log.Level;
 import com.pvminecraft.points.log.Stdout;
-import com.pvminecraft.points.utils.Downloader;
+import com.pvminecraft.points.utils.Updater;
 import com.pvminecraft.points.warps.GlobalWarpManager;
 import com.pvminecraft.points.warps.PlayerWarpManager;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.*;
+
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
@@ -40,7 +39,6 @@ public class Points extends JavaPlugin implements PointsService {
     private HomeManager homeManager;
     private PlayerWarpManager playerManager;
     private GlobalWarpManager globalManager;
-    public static final String vrsnURL = "http://bukget.org/api/plugin/points/latest";
     private YamlConfiguration config;
     private File confFile;
     
@@ -57,8 +55,10 @@ public class Points extends JavaPlugin implements PointsService {
             getDataFolder().mkdirs();
         
         setupConfig();
-        if(Config.checkUpdates.getBoolean())
-            checkVersion();
+
+        if(Config.autoUpdate.getBoolean()) {
+            Updater updater = new Updater(this, "points", this.getFile(), Updater.UpdateType.DEFAULT, false);
+        }
         
         ServicesManager sm = getServer().getServicesManager();
         Messages.buildMessages();
@@ -75,34 +75,6 @@ public class Points extends JavaPlugin implements PointsService {
         Stdout.println("Points is now active", Level.MESSAGE);
     }
     
-    private void checkVersion() {
-        String metaData = Downloader.getFile(vrsnURL);
-        String[] lines;
-        String version = null;
-        if(metaData == null) {
-            Stdout.println("Couldn't check for updates!", Level.ERROR);
-            return;
-        }
-        lines = metaData.split("\n");
-        for(int i = 0; i < lines.length; i++)
-            lines[i] = lines[i].trim();
-        for(String line : lines)
-            if(line.matches("\"name\": \"Points [\\.0-9A-z]+\","))
-                version = line; 
-        if(version == null) {
-            Stdout.println("Couldn't check for updates!", Level.ERROR);
-            return;
-        }
-        version = version.replace("\"", "");
-        version = version.replace(",", "");
-        version = version.split(":")[1].trim();
-        version = version.split(" ")[1].substring(1);
-        if(version.compareTo(getDescription().getVersion()) > 0) {
-            Stdout.println("A new version of Points (" + version + ") is available.", Level.MESSAGE);
-            Stdout.println("        Check http://dev.bukkit.org/server-mods/points", Level.NONE);
-        }
-    }
-    
     private void setupConfig() {
         try {
             confFile = new File(getDataFolder().getPath(), "config.yml");
@@ -112,7 +84,7 @@ public class Points extends JavaPlugin implements PointsService {
             Stdout.println("Loaded configuration", Level.MESSAGE);
         } catch(FileNotFoundException e) {
             Stdout.println("Couldn't find config.yml... Generating...", Level.MESSAGE);
-            if(Downloader.copyFile(Points.class.getResourceAsStream("resources/config.yml"), confFile.getPath())) {
+            if(copyFile(Points.class.getResourceAsStream("resources/config.yml"), confFile.getPath())) {
                 Stdout.println("config.yml has been generated!", Level.MESSAGE);
                 setupConfig();
             } else {
@@ -243,5 +215,22 @@ public class Points extends JavaPlugin implements PointsService {
     
     public HomeManager getHomeManager() {
         return homeManager;
+    }
+
+    private static boolean copyFile(InputStream resource, String path) {
+        try {
+            File target = new File(path);
+            if(!target.exists())
+                target.createNewFile();
+            OutputStream out = new FileOutputStream(target);
+            int next = resource.read();
+            while(next != -1) {
+                out.write(next);
+                next = resource.read();
+            }
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
     }
 }
