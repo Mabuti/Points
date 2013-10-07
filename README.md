@@ -1,4 +1,5 @@
 Points
+======
 
 Points is a Bukkit Minecraft server plugin that provides /home, /spawn, and
 warp points functionality for users.
@@ -33,14 +34,12 @@ Building
 
 I use Apache Ant to handle my builds. You'll have to install Ant if you
 want to build Points. The process is fairly simple. In order to build
-Points, need a Bukkit API jar (http://dl.bukkit.org), and a FlatDB jar.
-Make a lib/ directory, place the jars in it, and then execute:
+Points, need a Bukkit API jar (http://dl.bukkit.org). Make a lib/ directory,
+place the jars in it, and then execute:
+
   'ant clean build jar'
- A dist/ directory containing the resulting jar, will be created.
 
- To ensure that your built jar is stable, I recommend building off of a
- stable version of Points. These are tagged in git by version number.
-reated.
+A dist/ directory containing the resulting jar, will be created.
 
- To ensure that your built jar is stable, I recommend building off of a
- stable version of Points. These are tagged in git by version number.
+To ensure that your built jar is stable, I recommend building off of a
+stable version of Points. These are tagged in git by version number.
